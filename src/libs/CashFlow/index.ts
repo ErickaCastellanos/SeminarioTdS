@@ -1,6 +1,6 @@
-//Interfaz
+//Interfaz solo para saber comova a estar estructurado el objeto
 export interface ICashFlow{
-    type: 'INCOME' | 'EXPENSE'; //Ingreso, dato
+    type: 'INCOME' | 'EXPENSE'; //Ingreso, Gasto
     date: Date;
     amount: number;
     description: string;
@@ -24,13 +24,18 @@ export class CashFlow {
         throw Error('Index out of range');
     }
 
+    //Inserta en el arreglo clasflowitems va agregar el nuevo cashflow que
+    //se le está mandando si ya no esxite internamente dentro de ese arreglo
     public addCashFlow(cashFlow:ICashFlow) : number {
+        //Método pra encontrar el îndice de un objeto basåndose en ciertas características
         const cashFlowExist = this.cashFlowItems.findIndex(
             (obj) =>{
+                //Si fineindex no lo encunetra va a devolver -1
                 return obj.amount === cashFlow.amount && obj.description === cashFlow.description;
             }
         );
-
+        
+        //
         if(cashFlowExist < 0){
             this.cashFlowItems.push(cashFlow);
             return this.cashFlowItems.length -1;
@@ -38,6 +43,7 @@ export class CashFlow {
             // 0   1   2   3
             // 4 - 1 = 3
         }
+        //
         throw Error('CashFlow Exists on Collection');
     }
 
