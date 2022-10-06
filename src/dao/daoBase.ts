@@ -7,6 +7,7 @@ export interface IDaoObject {
     persistanceName: string;
     findAll: Function; //No ocupa nada se queda como función
     findByID: Function; //obtenemos un id(_id, objectId)
+    createOne: Function;
     update: Function; 
     delete: Function; 
     findByFilter: Function; 
