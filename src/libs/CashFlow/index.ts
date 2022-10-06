@@ -1,5 +1,6 @@
 //Interfaz solo para saber comova a estar estructurado el objeto
 //Para que pueda ser importada en otro archivo
+//Este modelo se utu\ilizara para las bdd
 export interface ICashFlow {
     type: 'INCOME' | 'EXPENSE'; //Ingreso, Gasto
     date: Date;
