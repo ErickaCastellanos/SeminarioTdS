@@ -5,8 +5,14 @@ const router = Router();
 const cashFlowInstance = new CashFlow();
 
 //Obtener todos
-router.get('/', (_req, res)=>{
-  res.json(cashFlowInstance.getAllCashFlow());
+router.get('/', async (_req, res)=>{
+  try{
+    res.json(await cashFlowInstance.getAllCashFlow());
+  }catch(ex){
+    console.error(ex);
+    res.status(503).json({error:ex});
+  }
+  
 });
 
 //Obtener por id

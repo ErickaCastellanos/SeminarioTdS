@@ -16,22 +16,21 @@ export abstract class AbstractDao<T> implements IDaoObject {
     }
  
     //Me devuelve el tipo de dato que es la promesa de un arreglo de T(Genérico)
-    public findAll(): Promise<T[]> {
-        throw new Error("Not Implemented");
+    public async findAll(): Promise<T[]> {
+        const sqlStr = `SELECT * from ${this.persistanceName};`;
+        const datos = await this.connection.all(sqlStr);
+
+        return datos;
     };
 
-    public findByID(){
-        throw new Error("Not Implemented");
-    };
+    public async findByID(identifier: Partial<T>): Promise<T>{
+        //Obtenemos los datos
+        const {columns, values, params:_params} = this.getColValParmArr(identifier);
+        const sqlSelect = `SELECT * from ${this.persistanceName} where ${columns.map(o=>`${o}=?`).join(' and ')};`;
+        const dato = await this.connection.get(sqlSelect, values);
 
-    private getColValParmArr(data: Partial<T>): {columns:string[], values:unknown[], params:string[]} {
-        //Extraemos las llaves de data
-        const columns = Object.keys(data);
-        const values = Object.values(data);
-        const params = columns.map(()=>'?');
-
-        return {columns, values, params}
-    }   
+        return dato;
+    }; 
 
 
     //Va a recibir la data, defino la T porque yo puedo definir como 
@@ -53,7 +52,7 @@ export abstract class AbstractDao<T> implements IDaoObject {
     public async update(identifier: Partial<T>, data: Partial<T>): Promise<boolean> {
         //Update table_name set ...columns=?, where ...identifier=?;
         const {columns, values, params:_params} = this.getColValParmArr(data);
-        const {columns:columnsId, values:valuesId, params:_paramsId} = this.getColValParmArr(data);
+        const {columns:columnsId, values:valuesId, params:_paramsId} = this.getColValParmArr(identifier);
         const finalValues = [...values, ...valuesId];
         const sqlUpdate = `UPDATE ${this.persistanceName} SET ${columns.map((o)=>`${o}=?`).join(' ')} WHERE ${columnsId.map((o)=>`${o}=?`).join(' ')};`;
         
@@ -61,8 +60,12 @@ export abstract class AbstractDao<T> implements IDaoObject {
         return true;
     };
 
-    public delete(){
-        throw new Error("Not Implemented");
+    public async delete(identifier: Partial<T>): Promise<boolean>{
+        const {columns, values, params:_params} = this.getColValParmArr(identifier);
+        const sqlDelete = `DELETE from ${this.persistanceName} where ${columns.map(o=>`${o}=?`).join(' and ')};`;
+
+        await this.connection.exec(sqlDelete, values);
+        return true;
     };
 
     public findByFilter(){
@@ -72,4 +75,18 @@ export abstract class AbstractDao<T> implements IDaoObject {
     public aggregate(){
         throw new Error("Not Implemented");
     };
+
+    public exec(sqlstr: string) {
+        return this.connection.exec(sqlstr);
+    }
+
+    //Utiitario
+    private getColValParmArr(data: Partial<T>): {columns:string[], values:unknown[], params:string[]} {
+        //Extraemos las llaves de data
+        const columns = Object.keys(data);
+        const values = Object.values(data);
+        const params = columns.map(()=>'?');
+
+        return {columns, values, params}
+    }  
 }

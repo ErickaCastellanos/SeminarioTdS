@@ -1,6 +1,8 @@
 //Interfaz solo para saber comova a estar estructurado el objeto
 //Para que pueda ser importada en otro archivo
 //Este modelo se utu\ilizara para las bdd
+import { getConnection } from "@models/sqlite/SqliteConn";
+import { CashFlowDao } from "@models/sqlite/CashFlowDao";
 export interface ICashFlow {
     type: 'INCOME' | 'EXPENSE'; //Ingreso, Gasto
     date: Date;
@@ -10,15 +12,24 @@ export interface ICashFlow {
 
 //Definición de clase, para manejar la lógica
 export class CashFlow {
+    private dao: CashFlowDao;
+    public constructor() {
+        getConnection()
+        .then(conn=>{
+            this.dao = new CashFlowDao(conn);
+        })
+        .catch(ex=>console.error(ex));
+    }
     //Manejo en memoria de un objeto
     private cashFlowItems: ICashFlow[] = [];
 
     /****************************************** CONSULTAS ******************************************/
 
     //Obtener todos los elementos
-    public getAllCashFlow(): ICashFlow[] {
+    public getAllCashFlow(){
         //Contiene todos los elementos privados del CashFlow
-        return this.cashFlowItems; // select * from cashflow;
+        return this.dao.getClashFlows()
+        //return this.cashFlowItems; // select * from cashflow;
     }
 
     //Obtener por id los elementos, pero debemos manejar los extremos validando

@@ -1,12 +1,26 @@
 import { ICashFlow } from "../entities/CashFlow" ;
 import { AbstractDao } from "./AbstractDao";
+import sqlite from 'sqlite';
 
 //Definimos el tipo de datos que va a utilizar
 export class CashFlowDao extends AbstractDao<ICashFlow> {
+    //Constructor
+    public constructor(db:unknown) {
+        //Vamos a esperrar que nos inyecte la bdd y accede y utiliza todos los elementos
+        super('CASHFLOW', db as sqlite.Database);
+        //Creo la BDD que voy a ocupar
+        super.exec('CREATE TABLE IF NOT EXISTS CASHFLOW(_id INTEGER AUTONUMERIC NOT NULL PRIMARY KEY,'
+        + 'TYPE TEXT,'
+        + 'date TEXT,'
+        + 'amount NUMERIC,'
+        + 'description TEXT);'
+        ).then().catch(e=>console.error(e));
+    }
+
     //Metodo
-    public async getCashFlows() {
+    public async getClashFlows() {
         //La palabra clave super hace referencia a la clase heredada
-        super.findAll()
+        return super.findAll()
     }
 
     /** */
@@ -20,5 +34,29 @@ export class CashFlowDao extends AbstractDao<ICashFlow> {
             throw ex;
         }
         
+    }
+
+    public async updateNewCashFlow( updateCashFlow: ICashFlow) {
+        try {
+            //Damos la responsabilidad al driver de conectarse a la BDD y grabarlo
+            const {_id, ...updateObject} = updateCashFlow;
+            const result = await super.update({_id}, updateObject);
+            return result;
+        }catch( ex: unknown) {
+            console.log("CashFlow sqlite: ", (ex as Error).message);
+            throw ex;
+        } 
+    }
+
+    public async deleteCashFlow( deleteCashFlow: ICashFlow) {
+        try {
+            //Damos la responsabilidad al driver de conectarse a la BDD y grabarlo
+            const {_id} = deleteCashFlow;
+            const result = await super.delete({_id});
+            return result;
+        }catch( ex: unknown) {
+            console.log("CashFlow sqlite: ", (ex as Error).message);
+            throw ex;
+        } 
     }
 }
