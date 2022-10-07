@@ -1,20 +1,19 @@
-import { ICashFlow } from "../entities/CashFlow" ;
+import { ICashFlow } from "../entities/CashFlow";
 import { AbstractDao } from "./AbstractDao";
 import sqlite from 'sqlite';
 
 //Definimos el tipo de datos que va a utilizar
 export class CashFlowDao extends AbstractDao<ICashFlow> {
-    //Constructor
-    public constructor(db:unknown) {
+    public constructor(db: sqlite.Database) {
         //Vamos a esperrar que nos inyecte la bdd y accede y utiliza todos los elementos
         super('CASHFLOW', db as sqlite.Database);
         //Creo la BDD que voy a ocupar
-        super.exec('CREATE TABLE IF NOT EXISTS CASHFLOW(_id INTEGER AUTONUMERIC NOT NULL PRIMARY KEY,'
-        + 'TYPE TEXT,'
-        + 'date TEXT,'
-        + 'amount NUMERIC,'
-        + 'description TEXT);'
-        ).then().catch(e=>console.error(e));
+        super.exec('CREATE TABLE IF NOT EXISTS CASHFLOW ('
+            + ' _id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,'
+            + ' type TEXT,'
+            + ' date TEXT,'
+            + ' amount NUMERIC,'
+            + ' description TEXT);').then().catch(e => console.error(e));
     }
 
     //Metodo
@@ -23,40 +22,50 @@ export class CashFlowDao extends AbstractDao<ICashFlow> {
         return super.findAll()
     }
 
+    public async getClashFlowById(identifier: Partial<ICashFlow>) {
+        try {
+            const result = await super.findByID(identifier);
+            return result;
+        } catch (ex: unknown) {
+            console.log("CashFlowDao sqlite:", (ex as Error).message);
+            throw ex;
+        }
+    }
+
     /** */
-    public async insertNewCashFlow( newCashFlow: ICashFlow) {
+    public async insertNewCashFlow(newCashFlow: ICashFlow) {
         try {
             //Damos la responsabilidad al driver de conectarse a la BDD y grabarlo
             const result = await super.createOne(newCashFlow);
             return result;
-        }catch( ex: unknown) {
+        } catch (ex: unknown) {
             console.log("CashFlow sqlite: ", (ex as Error).message);
             throw ex;
         }
-        
+
     }
 
-    public async updateNewCashFlow( updateCashFlow: ICashFlow) {
+    public async updateNewCashFlow(updateCashFlow: ICashFlow) {
         try {
             //Damos la responsabilidad al driver de conectarse a la BDD y grabarlo
-            const {_id, ...updateObject} = updateCashFlow;
-            const result = await super.update({_id}, updateObject);
+            const { _id, ...updateObject } = updateCashFlow;
+            const result = await super.update({ _id }, updateObject);
             return result;
-        }catch( ex: unknown) {
-            console.log("CashFlow sqlite: ", (ex as Error).message);
+        } catch (ex: unknown) {
+            console.log("CashFlowDao sqlite:", (ex as Error).message);
             throw ex;
-        } 
+        }
     }
 
-    public async deleteCashFlow( deleteCashFlow: ICashFlow) {
+    public async deleteCashFlow(deleteCashFlow: ICashFlow) {
         try {
             //Damos la responsabilidad al driver de conectarse a la BDD y grabarlo
-            const {_id} = deleteCashFlow;
-            const result = await super.delete({_id});
+            const { _id } = deleteCashFlow;
+            const result = await super.delete({ _id });
             return result;
-        }catch( ex: unknown) {
-            console.log("CashFlow sqlite: ", (ex as Error).message);
+        } catch (ex: unknown) {
+            console.log("CashFlow sqlite:", (ex as Error).message);
             throw ex;
-        } 
+        }
     }
 }

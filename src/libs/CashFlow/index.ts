@@ -4,7 +4,7 @@
 import { getConnection } from "@models/sqlite/SqliteConn";
 import { CashFlowDao } from "@models/sqlite/CashFlowDao";
 export interface ICashFlow {
-    type: 'INCOME' | 'EXPENSE'; //Ingreso, Gasto
+    type: 'INCOME' | 'EXPENSE';
     date: Date;
     amount: number;
     description: string;
@@ -15,10 +15,10 @@ export class CashFlow {
     private dao: CashFlowDao;
     public constructor() {
         getConnection()
-        .then(conn=>{
-            this.dao = new CashFlowDao(conn);
-        })
-        .catch(ex=>console.error(ex));
+            .then(conn => {
+                this.dao = new CashFlowDao(conn);
+            })
+            .catch(ex => console.error(ex));
     }
     //Manejo en memoria de un objeto
     private cashFlowItems: ICashFlow[] = [];
@@ -26,7 +26,7 @@ export class CashFlow {
     /****************************************** CONSULTAS ******************************************/
 
     //Obtener todos los elementos
-    public getAllCashFlow(){
+    public getAllCashFlow() {
         //Contiene todos los elementos privados del CashFlow
         return this.dao.getClashFlows()
         //return this.cashFlowItems; // select * from cashflow;
@@ -34,25 +34,17 @@ export class CashFlow {
 
     //Obtener por id los elementos, pero debemos manejar los extremos validando
     //que si el index es mayor a cero devolvemos el CashFlow
-    public getCashFlowByIndex(index: number): ICashFlow {
-        if (index >= 0 && index < this.cashFlowItems.length) {
-            return this.cashFlowItems[index];
-        }
-        throw Error('Index out of range');//Devulevo algo que no existe
+    public getCashFlowByIndex(index: number){
+        return this.dao.getClashFlowById({_id:index});
     }
 
     //Inserta en el arreglo clasflowitems va agregar el nuevo cashflow que
     //se le está mandando si ya no esxite internamente dentro de ese arreglo
-    public addCashFlow(cashFlow: ICashFlow): number {
+    public addCashFlow(cashFlow: ICashFlow) {
         //Método pra encontrar el îndice de un objeto basåndose en ciertas características
-        const cashFlowExist = this.cashFlowItems.findIndex(
-            (obj) => {
-                //Si fineindex no lo encunetra va a devolver -1
-                return obj.amount === cashFlow.amount && obj.description === cashFlow.description;
-            }
-        );
+        return this.dao.insertNewCashFlow(cashFlow);
 
-        //
+        /*/
         if (cashFlowExist < 0) {
             this.cashFlowItems.push(cashFlow);
             return this.cashFlowItems.length - 1; //Devolvemos el último índice
@@ -61,17 +53,13 @@ export class CashFlow {
             // 4 - 1 = 3
         }
         //
-        throw Error('CashFlow Exists on Collection');
+        throw Error('CashFlow Exists on Collection');*/
     }
 
     //Actualizar, recibiendo un index y recibimos un CashFlow como tal, este CF devolverá un booleano
-    public updateCashFlow(index: number, cashFlow: ICashFlow): boolean {
+    public updateCashFlow( index:number, cashFlow:ICashFlow){
         //Se compara el actual con el que viene
-        if (index >= 0 && index < this.cashFlowItems.length) {
-            this.cashFlowItems[index] = cashFlow;
-            return true;
-        }
-        return false;
+        return this.dao.update({_id:index}, cashFlow);
     }
 
     //Eliminar el CashFlow, ocupamos un número y devolvemos verdadero o falso
