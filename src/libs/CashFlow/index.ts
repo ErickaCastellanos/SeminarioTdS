@@ -43,17 +43,6 @@ export class CashFlow {
     public addCashFlow(cashFlow: ICashFlow) {
         //Método pra encontrar el îndice de un objeto basåndose en ciertas características
         return this.dao.insertNewCashFlow(cashFlow);
-
-        /*/
-        if (cashFlowExist < 0) {
-            this.cashFlowItems.push(cashFlow);
-            return this.cashFlowItems.length - 1; //Devolvemos el último índice
-            // [{},{},{},{}]: Cuando se corre este arreglo se agrega uno más
-            // 0   1   2   3
-            // 4 - 1 = 3
-        }
-        //
-        throw Error('CashFlow Exists on Collection');*/
     }
 
     //Actualizar, recibiendo un index y recibimos un CashFlow como tal, este CF devolverá un booleano
