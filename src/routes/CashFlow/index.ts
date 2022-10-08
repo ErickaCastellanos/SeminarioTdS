@@ -38,25 +38,19 @@ router.post('/new', async (req, res)=>{
 });
 
 //Los miembros que estan en un objeto y los que vienen los convierte en uno nuevo
-router.put('/update/:index', (req, res)=>{
+router.put('/update/:index', async (req, res)=>{
   try {
-    const { index = -1} = req.params as unknown as {index?:number};
+    const { index } = req.params;
     //Del cuerpo sacamos los datos que van a convertirse en la estructura de CashFlow
     const cashFlowFromForm = req.body as ICashFlow;
     //Fución de dos objetos, el objeto que tenemos de la colección con el objeto
     //que viene del form http
-    const cashFlowUpdate = Object.assign(
-      cashFlowInstance.getCashFlowByIndex(index), cashFlowFromForm
-    );
-    // const cashFlowUpdate = {...cashFlowInstance.getCashFlowByIndex(index), ...cashFlowFromForm}; forma de hacerlo
-    if (cashFlowInstance.updateCashFlow(index, cashFlowUpdate)){
-      res.json(cashFlowUpdate)
-    } else {
-      res.status(404).json({"msg":"Update not posible"});
-    }
+    await cashFlowInstance.updateCashFlow(+index, cashFlowFromForm);
+    res.status(200).json({"msg":"Registro Actualizado"});
   } catch(error) {
     res.status(500).json({error: (error as Error).message});
   }
+  // const cashFlowUpdate = {...cashFlowInstance.getCashFlowByIndex(index), ...cashFlowFromForm}; forma de hacerlo
 });
 
 
