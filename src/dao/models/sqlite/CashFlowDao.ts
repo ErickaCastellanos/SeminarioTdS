@@ -57,7 +57,7 @@ export class CashFlowDao extends AbstractDao<ICashFlow> {
         }
     }
 
-    public async deleteCashFlow(deleteCashFlow: ICashFlow) {
+    public async deleteCashFlow(deleteCashFlow: Partial<ICashFlow>) {
         try {
             //Damos la responsabilidad al driver de conectarse a la BDD y grabarlo
             const { _id } = deleteCashFlow;

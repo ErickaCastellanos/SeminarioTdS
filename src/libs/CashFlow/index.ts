@@ -20,8 +20,6 @@ export class CashFlow {
             })
             .catch(ex => console.error(ex));
     }
-    //Manejo en memoria de un objeto
-    private cashFlowItems: ICashFlow[] = [];
 
     /****************************************** CONSULTAS ******************************************/
 
@@ -52,15 +50,7 @@ export class CashFlow {
     }
 
     //Eliminar el CashFlow, ocupamos un número y devolvemos verdadero o falso
-    public deleteCashFlow(index: number): boolean {
-        if (index >= 0 && index < this.cashFlowItems.length) {
-            //Realizamos una sustitución
-            this.cashFlowItems = this.cashFlowItems.filter(
-                //Método que recibe verdadero o falso
-                (_obj: ICashFlow, i: number) => i !== index
-            );
-            return true;
-        }
-        return false;
+    public deleteCashFlow(index: number) {
+       return this.dao.deleteCashFlow({_id:index});
     }
 }

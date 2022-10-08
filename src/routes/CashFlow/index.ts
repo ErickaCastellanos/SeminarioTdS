@@ -27,10 +27,10 @@ router.get('/byindex/:index', async (req, res) => {
 });
 
 //Nuevo
-router.post('/new', (req, res)=>{
+router.post('/new', async (req, res)=>{
   try {
     const newCashFlow = req.body as unknown as ICashFlow;
-    const newCashFlowIndex = cashFlowInstance.addCashFlow(newCashFlow);
+    const newCashFlowIndex = await cashFlowInstance.addCashFlow(newCashFlow);
     res.json({newIndex: newCashFlowIndex});
   } catch (error) {
     res.status(500).json({error: (error as Error).message});
