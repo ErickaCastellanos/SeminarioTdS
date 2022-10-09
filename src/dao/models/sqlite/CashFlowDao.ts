@@ -1,4 +1,4 @@
-import { ICashFlow } from "../entities/CashFlow";
+/*import { ICashFlow } from "../entities/CashFlow";
 import { AbstractDao } from "./AbstractDao";
 import sqlite from 'sqlite';
 
@@ -32,7 +32,6 @@ export class CashFlowDao extends AbstractDao<ICashFlow> {
         }
     }
 
-    /** */
     public async insertNewCashFlow(newCashFlow: ICashFlow) {
         try {
             //Damos la responsabilidad al driver de conectarse a la BDD y grabarlo
@@ -68,4 +67,4 @@ export class CashFlowDao extends AbstractDao<ICashFlow> {
             throw ex;
         }
     }
-}
+}*/

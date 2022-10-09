@@ -9,6 +9,7 @@ export class UserDao extends AbstractDao<IUser> {
         super('USER', db as sqlite.Database);
         super.exec('CREATE TABLE IF NOT EXISTS USER ('
             + ' _id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,'
+            + 'idNumber TEXT,'
             + 'name TEXT,'
             + 'lastName TEXT,'
             + 'age NUMERIC,'

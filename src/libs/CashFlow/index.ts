@@ -1,7 +1,7 @@
 //Interfaz solo para saber comova a estar estructurado el objeto
 //Para que pueda ser importada en otro archivo
 //Este modelo se utu\ilizara para las bdd
-import { getConnection } from "@models/sqlite/SqliteConn";
+/*import { getConnection } from "@models/sqlite/SqliteConn";
 import { CashFlowDao } from "@models/sqlite/CashFlowDao";
 export interface ICashFlow {
     type: 'INCOME' | 'EXPENSE';
@@ -21,7 +21,7 @@ export class CashFlow {
             .catch(ex => console.error(ex));
     }
 
-    /****************************************** CONSULTAS ******************************************/
+    /****************************************** CONSULTAS *****************************************
 
     //Obtener todos los elementos
     public getAllCashFlow() {
@@ -53,4 +53,4 @@ export class CashFlow {
     public deleteCashFlow(index: number) {
        return this.dao.deleteCashFlow({_id:index});
     }
-}
+}*/
