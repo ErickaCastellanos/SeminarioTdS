@@ -1,8 +1,10 @@
 import {Router} from 'express';
 import { ICashFlow, CashFlow } from '@libs/CashFlow';
+import { commonValidator, validateInput } from '@server/utils/validator';
+
 
 const router = Router();
-const cashFlowInstance = new CashFlow();
+const cashFlowInstance = new CashFlow("MONGODB");
 
 //Obtener todos
 router.get('/', async (_req, res)=>{
@@ -14,12 +16,22 @@ router.get('/', async (_req, res)=>{
   }
 });
 
+//
+router.get('/count', async (_req, res)=>{
+  try {
+    res.json({"count": await cashFlowInstance.getCountCashflow()});
+  } catch (ex) {
+    console.error(ex);
+    res.status(503).json({error:ex});
+  }
+});
+
 //Obtener por id
 router.get('/byindex/:index', async (req, res) => {
   try {
-    //El index viene del objeto params
     const { index } = req.params;
-    res.json(await cashFlowInstance.getCashFlowByIndex(+index));
+    const id = (/^\d*$/.test(index))?+index:index;
+    res.json(await cashFlowInstance.getCashFlowByIndex(id));
   } catch (error) {
     console.log("Error", error);
     res.status(500).json({'msg': 'Error al obtener Registro'});
@@ -27,9 +39,25 @@ router.get('/byindex/:index', async (req, res) => {
 });
 
 //Nuevo
+router.post('/testvalidator', async (req, res)=>{
+  const { email } = req.body;
+  const validateEmailSchema = commonValidator.email;
+  validateEmailSchema.param="email";
+  validateEmailSchema.required =true;
+  validateEmailSchema.customValidate = (values)=> {return values.includes('unicah.edu');}
+  const errors = validateInput({email}, [validateEmailSchema]);
+  if(errors.length > 0){
+    return res.status(400).json(errors);
+  }
+  return res.json({email});
+});
+
+//
 router.post('/new', async (req, res)=>{
   try {
     const newCashFlow = req.body as unknown as ICashFlow;
+    //VALIDATE
+
     const newCashFlowIndex = await cashFlowInstance.addCashFlow(newCashFlow);
     res.json({newIndex: newCashFlowIndex});
   } catch (error) {
@@ -41,23 +69,21 @@ router.post('/new', async (req, res)=>{
 router.put('/update/:index', async (req, res)=>{
   try {
     const { index } = req.params;
-    //Del cuerpo sacamos los datos que van a convertirse en la estructura de CashFlow
     const cashFlowFromForm = req.body as ICashFlow;
-    //Fución de dos objetos, el objeto que tenemos de la colección con el objeto
-    //que viene del form http
-    await cashFlowInstance.updateCashFlow(+index, cashFlowFromForm);
+    const id = (/^\d*$/.test(index))?+index:index;
+    await cashFlowInstance.updateCashFlow(id, cashFlowFromForm);
     res.status(200).json({"msg":"Registro Actualizado"});
   } catch(error) {
     res.status(500).json({error: (error as Error).message});
   }
-  // const cashFlowUpdate = {...cashFlowInstance.getCashFlowByIndex(index), ...cashFlowFromForm}; forma de hacerlo
 });
 
-
+//
 router.delete('/delete/:index', (req, res)=>{
   try {
-    const { index } = req.params as unknown as {index:number};
-    if (cashFlowInstance.deleteCashFlow(index)) {
+    const { index } = req.params;
+    const id = (/^\d*$/.test(index))?+index:index;
+    if (cashFlowInstance.deleteCashFlow(id)) {
       res.status(200).json({"msg": "Registro Eliminado"});
     } else {
       res.status(500).json({'msg': 'Error al eliminar Registro'});

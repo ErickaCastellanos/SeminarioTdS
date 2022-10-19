@@ -1,8 +1,10 @@
 //Interfaz solo para saber comova a estar estructurado el objeto
 //Para que pueda ser importada en otro archivo
 //Este modelo se utu\ilizara para las bdd
-import { getConnection } from "@models/sqlite/SqliteConn";
-import { CashFlowDao } from "@models/sqlite/CashFlowDao";
+import { getConnection as getSQLiteConn } from "@models/sqlite/SqliteConn";
+import { getConnection as getMongoDBConn } from "@models/mongodb/MongoDBConn";
+import { CashFlowDao as CashFlowSqLiteDao } from "@models/sqlite/CashFlowDao";
+import { CashFlowDao as CashFlowMongoDbDao } from "@models/mongodb/CashFlowDao";
 export interface ICashFlow {
     type: 'INCOME' | 'EXPENSE';
     date: Date;
@@ -12,45 +14,58 @@ export interface ICashFlow {
 
 //Definición de clase, para manejar la lógica
 export class CashFlow {
-    private dao: CashFlowDao;
-    public constructor() {
-        getConnection()
-            .then(conn => {
-                this.dao = new CashFlowDao(conn);
-            })
-            .catch(ex => console.error(ex));
+    private dao: CashFlowSqLiteDao|CashFlowMongoDbDao;
+    public constructor(typeConn: "SQLITE"|"MONGODB"){
+      const getConnection = typeConn === "SQLITE" ? getSQLiteConn : getMongoDBConn;
+      const CashFlowDao =  typeConn === "SQLITE" ? CashFlowSqLiteDao : CashFlowMongoDbDao;
+      getConnection()
+        .then(conn=>{
+          this.dao = new CashFlowDao(conn);
+        })
+        .catch(ex=>console.error(ex));
     }
 
     /****************************************** CONSULTAS *****************************************/
 
     //Obtener todos los elementos
     public getAllCashFlow() {
-        //Contiene todos los elementos privados del CashFlow
         return this.dao.getClashFlows()
-        //return this.cashFlowItems; // select * from cashflow;
     }
 
     //Obtener por id los elementos, pero debemos manejar los extremos validando
-    //que si el index es mayor a cero devolvemos el CashFlow
-    public getCashFlowByIndex(index: number){
-        return this.dao.getClashFlowById({_id:index});
+    //que si el index es mayor a cero devolvemos el usuario
+    public getCashFlowByIndex(index: number | string) {
+        if (typeof index === "string") {
+            return (this.dao as CashFlowMongoDbDao).getClashFlowById(index as string);
+        } else {
+            return (this.dao as CashFlowSqLiteDao).getClashFlowById({ _id: index as number });
+        }
+    }
+
+    //
+    public getCountCashflow() {
+        return (this.dao instanceof CashFlowMongoDbDao) ?
+        (this.dao as CashFlowMongoDbDao).getCountCashFlow() :
+        Promise.resolve(0);
     }
 
     //Inserta en el arreglo clasflowitems va agregar el nuevo cashflow que
     //se le está mandando si ya no esxite internamente dentro de ese arreglo
     public addCashFlow(cashFlow: ICashFlow) {
-        //Método pra encontrar el îndice de un objeto basåndose en ciertas características
         return this.dao.insertNewCashFlow(cashFlow);
     }
 
-    //Actualizar, recibiendo un index y recibimos un CashFlow como tal, este CF devolverá un booleano
-    public updateCashFlow( index:number, cashFlow:ICashFlow){
-        //Se compara el actual con el que viene
-        return this.dao.update({_id:index}, cashFlow);
+    //
+    public updateCashFlow(index: number | string, cashFlow: ICashFlow) {
+        return (this.dao as CashFlowMongoDbDao).updateCashFlow({ ...cashFlow, _id: index });
     }
 
-    //Eliminar el CashFlow, ocupamos un número y devolvemos verdadero o falso
-    public deleteCashFlow(index: number) {
-       return this.dao.deleteCashFlow({_id:index});
+    //
+    public deleteCashFlow(index: number | string) {
+        if (typeof index === "string") {
+            return (this.dao as CashFlowMongoDbDao).deleteCashFlow({ _id: index as string });
+        } else {
+            return (this.dao as CashFlowSqLiteDao).deleteCashFlow({ _id: index as number });
+        }
     }
 }

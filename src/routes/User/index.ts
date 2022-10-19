@@ -37,11 +37,14 @@ router.post('/new', async (req, res) => {
 });
 
 //Actualizar
+//Los miembros que estan en un objeto y los que vienen los convierte en uno nuevo
 router.put('/update/:index', async (req, res) =>{
     try {
         const { index } = req.params;
+         //Del cuerpo sacamos los datos que van a convertirse en la estructura de user
         const userFromForm = req.body as IUser;
-
+        //Fución de dos objetos, el objeto que tenemos de la colección con el objeto
+        //que viene del form http
         await userInstance.updateUser(+index, userFromForm);
         res.status(200).json({"msg":"Datos Actualizados"});
     } catch (error) {
