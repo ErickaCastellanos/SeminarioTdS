@@ -1,4 +1,4 @@
-/*import { ICashFlow } from "../entities/CashFlow";
+import { ICashFlow } from "../entities/CashFlow";
 import { AbstractDao } from "./AbstractDao";
 import sqlite from 'sqlite';
 
@@ -67,4 +67,4 @@ export class CashFlowDao extends AbstractDao<ICashFlow> {
             throw ex;
         }
     }
-}*/
+}

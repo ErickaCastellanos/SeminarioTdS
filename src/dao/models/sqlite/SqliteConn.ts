@@ -10,9 +10,9 @@ export const getConnection = async (url?: string ) => {
     console.log(open);
     if(!connection) {
         //Sino le manda nada entonces le damos la oportunidad de que envie este
-        //const dbUrl = (url)? url: (process.env.DB_URI || 'sample.db');
+        const dbUrl = (url)? url: (process.env.DB_URI || 'sample.db');
         //Solo copie y pegue para crear la base con otro nombre
-        const dbUrl = (url)? url: (process.env.DB_URI || 'user.db');
+        //const dbUrl = (url)? url: (process.env.DB_URI || 'user.db');
         //Que espere un momento antes de abrir la BDD y conectarse
         connection =  await open({
             filename: dbUrl,

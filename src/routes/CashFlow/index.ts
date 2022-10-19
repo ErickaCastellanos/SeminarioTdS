@@ -1,4 +1,4 @@
-/*import {Router} from 'express';
+import {Router} from 'express';
 import { ICashFlow, CashFlow } from '@libs/CashFlow';
 
 const router = Router();
@@ -69,4 +69,4 @@ router.delete('/delete/:index', (req, res)=>{
 });
 
 //Lo sacamos para poder
-export default router;*/
+export default router;
