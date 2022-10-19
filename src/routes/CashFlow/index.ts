@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import { ICashFlow, CashFlow } from '@libs/CashFlow';
-import { commonValidator, validateInput } from '@server/utils/validator';
+//import { commonValidator, validateInput } from '@server/utils/validator';
 
 
 const router = Router();
@@ -16,7 +16,7 @@ router.get('/', async (_req, res)=>{
   }
 });
 
-//
+/*
 router.get('/count', async (_req, res)=>{
   try {
     res.json({"count": await cashFlowInstance.getCountCashflow()});
@@ -24,7 +24,7 @@ router.get('/count', async (_req, res)=>{
     console.error(ex);
     res.status(503).json({error:ex});
   }
-});
+});*/
 
 //Obtener por id
 router.get('/byindex/:index', async (req, res) => {
@@ -38,7 +38,7 @@ router.get('/byindex/:index', async (req, res) => {
   }
 });
 
-//Nuevo
+/*
 router.post('/testvalidator', async (req, res)=>{
   const { email } = req.body;
   const validateEmailSchema = commonValidator.email;
@@ -50,7 +50,7 @@ router.post('/testvalidator', async (req, res)=>{
     return res.status(400).json(errors);
   }
   return res.json({email});
-});
+});*/
 
 //
 router.post('/new', async (req, res)=>{

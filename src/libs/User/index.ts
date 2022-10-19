@@ -1,4 +1,4 @@
-import { getConnection } from "@server/dao/models/sqlite/SqliteConn";
+/*import { getConnection } from "@server/dao/models/sqlite/SqliteConn";
 import { UserDao } from "@server/dao/models/sqlite/UserDao";
 export interface IUser {
     idNumber: string;
@@ -20,7 +20,7 @@ export class User {
         .catch(ex => console.error(ex));
     }
     
-    /****************************************** CONSULTAS ******************************************/
+    /****************************************** CONSULTAS ******************************************
     //Obtener todos los elementos
     public getAllUsers() {
         //Contiene todos los elementos privados del CashFlow
@@ -50,4 +50,4 @@ export class User {
         return this.dao.deteleUser({_id:index});
     }
 
-}
+}*/

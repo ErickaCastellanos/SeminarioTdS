@@ -34,6 +34,7 @@ export abstract class AbstractDao<T> implements IDaoObject {
   public async findAll(): Promise<WithId<T>[]> {
     return await this.collection.find({}).toArray();
   }
+  
   public async findByID(identifier: string): Promise<WithId<T>> {
     //El Filter<T> nos ayuda a evitar que cometamos errores al momento de realizar 
     //la sintaxis

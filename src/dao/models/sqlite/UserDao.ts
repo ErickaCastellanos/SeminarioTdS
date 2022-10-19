@@ -1,4 +1,4 @@
-import { IUser } from "../entities/User";
+/*import { IUser } from "../entities/User";
 import { AbstractDao } from "./AbstractDao";
 import sqlite from 'sqlite';
 
@@ -64,4 +64,4 @@ export class UserDao extends AbstractDao<IUser> {
             throw ex;
         }
     }
-}
+}*/

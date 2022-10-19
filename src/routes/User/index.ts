@@ -1,4 +1,4 @@
-import { Router } from "express";
+/*import { Router } from "express";
 import { IUser, User } from "@libs/User";
 
 const router = Router();
@@ -67,4 +67,4 @@ router.delete('/delete/:index', (req, res) => {
     }
 });
 
-export default router;
+export default router;*/
