@@ -48,6 +48,7 @@ export class CashFlowDao extends AbstractDao<ICashFlow> {
     }
   }
 
+  //Extraer los documentos sin la información como tal
   public async getCountCashFlow() {
     try {
       return await super.getCollection().countDocuments({});

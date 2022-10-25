@@ -42,7 +42,8 @@ export class CashFlow {
         }
     }
 
-    //
+    //Comparando si el dao es de tipo dao y lo convertimos porque solo mnogodb está
+    //trabajando sino es de mongodb devuelve 0
     public getCountCashflow() {
         return (this.dao instanceof CashFlowMongoDbDao) ?
         (this.dao as CashFlowMongoDbDao).getCountCashFlow() :
