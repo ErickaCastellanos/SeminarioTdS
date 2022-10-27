@@ -53,7 +53,17 @@ export class CashFlow {
     //Inserta en el arreglo clasflowitems va agregar el nuevo cashflow que
     //se le está mandando si ya no esxite internamente dentro de ese arreglo
     public addCashFlow(cashFlow: ICashFlow) {
-        return this.dao.insertNewCashFlow(cashFlow);
+        //
+        const { type, date, amount, description} = cashFlow;
+        //Mandar los correspondientes datos para convertirlos a sus elementos concretos
+        return this.dao.insertNewCashFlow(
+            {
+              type,
+              date: new Date(date),
+              amount: Number(amount),
+              description
+            }
+          );
     }
 
     //
