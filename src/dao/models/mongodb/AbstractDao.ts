@@ -48,14 +48,15 @@ export abstract class AbstractDao<T> implements IDaoObject {
   ): Promise<InsertOneResult<T>> {
     return await this.collection.insertOne(data);
   }
-  
+
+  //
   public async update(
     identifier: string,
     data: Partial<T>,
   ): Promise<UpdateResult> {
     const _id = new ObjectId(identifier) as Filter<T>;
     return this.collection.updateOne({ _id }, {
-      $set: data,
+      $set: data, //Va actualizar como una encapsulación para solo actualizar los campos correctos
     } as UpdateFilter<T>);
   }
 
@@ -78,6 +79,13 @@ export abstract class AbstractDao<T> implements IDaoObject {
     options: FindOptions<T> = {},
   ): Promise<WithId<T>[]> {
     return this.collection.find(filter, options).toArray();
+  }
+
+  public findOneByFilter(
+    filter: Filter<T>,
+    options: FindOptions<T> = {},
+  ): Promise<WithId<T>> {
+    return this.collection.findOne(filter, options);
   }
 
   public aggregate(

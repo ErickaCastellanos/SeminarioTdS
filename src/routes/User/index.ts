@@ -1,70 +1,44 @@
-/*import { Router } from "express";
-import { IUser, User } from "@libs/User";
+import express from 'express';
+const router = express.Router();
+import { Users } from '@libs/Users';
 
-const router = Router();
-const userInstance = new User();
-
-//Obtener todos
-router.get('/', async (_req, res)=> {
+const users = new Users();
+router.post('/signin', async (req, res) => {
     try {
-        res.json(await userInstance.getAllUsers());
+        //
+        const { name, email, password } = req.body;
+        const result = await users.signin(name, email, password);
+        console.log("SIGNIN:", result);
+        res.status(200).json({ "msg": "Usuario Creado Correctamente" });
     } catch (ex) {
-        console.error(ex);
-        res.status(503).json({error:ex});
+        console.log("Error:", ex);
+        res.status(500).json({ error: "Error al crear usuario" });
     }
 });
 
-//Obtener por Id
-router.get('/byindex/:index', async (req, res) => {
-    try {
-        const { index } = req.params;
-        res.json(await userInstance.getUserByIndex(+index));
-    } catch (error) {
-        console.log("Error", error);
-        res.status(500).json({'msg': 'Error al obtener Registro'});
-    }
+router.post('/login', async (req, res)=>{
+  try {
+    const {email, password} = req.body;
+    const result = await users.login(email, password);
+    console.log("LOGIN:", result);
+    res.status(200).json(result);
+  } catch(ex) {
+    console.log("Error:", ex);
+    res.status(403).json({error:"Credenciales no son Válidas"});
+  }
 });
 
-//Nuevo
-router.post('/new', async (req, res) => {
-    try {
-        const newUser = req.body as unknown as IUser;
-        const newUserIndex = await userInstance.addUser(newUser);
-        res.json({newIndex: newUserIndex});
-    } catch (error) {
-        res.status(500).json({error: (error as Error).message}); 
-    }
+router.post('/addrole/:id', async (req, res)=>{
+  try {
+    const {id} = req.params;
+    const {role} = req.body;
+    const result = await users.assignRoles(id, role);
+    console.log("ADD_ROLE:", result);
+    res.status(200).json(result);
+  } catch (ex){
+    console.log("Error:", ex);
+    res.status(403).json({error:"No se pudo asignar rol"});
+  }
 });
 
-//Actualizar
-//Los miembros que estan en un objeto y los que vienen los convierte en uno nuevo
-router.put('/update/:index', async (req, res) =>{
-    try {
-        const { index } = req.params;
-         //Del cuerpo sacamos los datos que van a convertirse en la estructura de user
-        const userFromForm = req.body as IUser;
-        //Fución de dos objetos, el objeto que tenemos de la colección con el objeto
-        //que viene del form http
-        await userInstance.updateUser(+index, userFromForm);
-        res.status(200).json({"msg":"Datos Actualizados"});
-    } catch (error) {
-        res.status(500).json({error: (error as Error).message});
-    }
-});
-
-//Eliminar
-router.delete('/delete/:index', (req, res) => {
-    try {
-        const { index } = req.params as unknown as {index:number};
-        if (userInstance.deleteUser(index)) {
-            res.status(200).json({"msg": "Registro Eliminado"});
-        }else {
-            res.status(500).json({'msg': 'Error al eliminar Registro'});
-        }
-    } catch (error) {
-        console.log("Error", error);
-        res.status(500).json({'msg': 'Error al eliminar Registro'});
-    }
-});
-
-export default router;*/
+export default router;
