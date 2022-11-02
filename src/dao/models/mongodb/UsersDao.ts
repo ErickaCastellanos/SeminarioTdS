@@ -6,6 +6,7 @@ export class UsersDao extends AbstractDao<IUser>{
     public constructor(db: Db) {
         super('users', db);
     }
+
     getUserByEmail(email: string) {
         const query = { email };
         return this.findOneByFilter(query);
@@ -16,7 +17,6 @@ export class UsersDao extends AbstractDao<IUser>{
     }
 
     updateUserFailed(id: string) {
-        //Lo que falle se contara
         return this.updateRaw(id, { $inc: { failedAttempts: 1 }, $set: { updated: new Date() } });
     }
 
@@ -32,7 +32,7 @@ export class UsersDao extends AbstractDao<IUser>{
             { $addToSet: { roles: role } }
         );
     }
-    
+
     changeUserPassword() { }
 
     //Nos aseguramos que no lleve niingun parcial

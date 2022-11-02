@@ -1,9 +1,7 @@
 //Interfaz solo para saber comova a estar estructurado el objeto
 //Para que pueda ser importada en otro archivo
-//Este modelo se utu\ilizara para las bdd
-import { getConnection as getSQLiteConn } from "@models/sqlite/SqliteConn";
+//Este modelo se utilizara para las bdd
 import { getConnection as getMongoDBConn } from "@models/mongodb/MongoDBConn";
-import { CashFlowDao as CashFlowSqLiteDao } from "@models/sqlite/CashFlowDao";
 import { CashFlowDao as CashFlowMongoDbDao } from "@models/mongodb/CashFlowDao";
 export interface ICashFlow {
     type: 'INCOME' | 'EXPENSE';
@@ -14,15 +12,15 @@ export interface ICashFlow {
 
 //Definición de clase, para manejar la lógica
 export class CashFlow {
-    private dao: CashFlowSqLiteDao|CashFlowMongoDbDao;
-    public constructor(typeConn: "SQLITE"|"MONGODB"){
-      const getConnection = typeConn === "SQLITE" ? getSQLiteConn : getMongoDBConn;
-      const CashFlowDao =  typeConn === "SQLITE" ? CashFlowSqLiteDao : CashFlowMongoDbDao;
-      getConnection()
-        .then(conn=>{
-          this.dao = new CashFlowDao(conn);
-        })
-        .catch(ex=>console.error(ex));
+    private dao: CashFlowMongoDbDao;
+    public constructor() {
+        const getConnection = getMongoDBConn;
+        const CashFlowDao = CashFlowMongoDbDao;
+        getConnection()
+            .then(conn => {
+                this.dao = new CashFlowDao(conn);
+            })
+            .catch(ex => console.error(ex));
     }
 
     /****************************************** CONSULTAS *****************************************/
@@ -32,38 +30,37 @@ export class CashFlow {
         return this.dao.getClashFlows()
     }
 
+    public getAllCashFlowFromUser(id: string) {
+        return this.dao.getCashFlowByUser(id);
+    }
+
     //Obtener por id los elementos, pero debemos manejar los extremos validando
     //que si el index es mayor a cero devolvemos el usuario
-    public getCashFlowByIndex(index: number | string) {
-        if (typeof index === "string") {
-            return (this.dao as CashFlowMongoDbDao).getClashFlowById(index as string);
-        } else {
-            return (this.dao as CashFlowSqLiteDao).getClashFlowById({ _id: index as number });
-        }
+    public getCashFlowByIndex(index: string) {
+        return this.dao.getClashFlowById(index);
     }
 
     //Comparando si el dao es de tipo dao y lo convertimos porque solo mnogodb está
     //trabajando sino es de mongodb devuelve 0
     public getCountCashflow() {
         return (this.dao instanceof CashFlowMongoDbDao) ?
-        (this.dao as CashFlowMongoDbDao).getCountCashFlow() :
-        Promise.resolve(0);
+            (this.dao as CashFlowMongoDbDao).getCountCashFlow() :
+            Promise.resolve(0);
     }
 
     //Inserta en el arreglo clasflowitems va agregar el nuevo cashflow que
     //se le está mandando si ya no esxite internamente dentro de ese arreglo
-    public addCashFlow(cashFlow: ICashFlow) {
-        //
-        const { type, date, amount, description} = cashFlow;
+    public addCashFlow(cashFlow: ICashFlow, userId: string) {
+        const { type, date, amount, description } = cashFlow;
         //Mandar los correspondientes datos para convertirlos a sus elementos concretos
         return this.dao.insertNewCashFlow(
             {
-              type,
-              date: new Date(date),
-              amount: Number(amount),
-              description
-            }
-          );
+                type,
+                date: new Date(date),
+                amount: Number(amount),
+                description
+            }, userId
+        );
     }
 
     //
@@ -72,11 +69,7 @@ export class CashFlow {
     }
 
     //
-    public deleteCashFlow(index: number | string) {
-        if (typeof index === "string") {
-            return (this.dao as CashFlowMongoDbDao).deleteCashFlow({ _id: index as string });
-        } else {
-            return (this.dao as CashFlowSqLiteDao).deleteCashFlow({ _id: index as number });
-        }
+    public deleteCashFlow(index: string) {
+        return this.dao.deleteCashFlow({ _id: index })
     }
 }

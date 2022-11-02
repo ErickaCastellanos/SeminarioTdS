@@ -32,7 +32,7 @@ export class Users {
         };
         return this.dao.createUser(newUser);
     }
-    
+
     public async login(email: string, password: string) {
         try {
             const user = await this.dao.getUserByEmail(email);
@@ -59,6 +59,7 @@ export class Users {
             throw err;
         }
     }
+
 
     public async assignRoles(id: string, role: string) {
         if (!availableRole.includes(role)) {
