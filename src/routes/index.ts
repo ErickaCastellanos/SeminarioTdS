@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import {Request, Router } from 'express';
 
 import CashFlowRouter from './CashFlow';
 import UsersRouter from './User';
