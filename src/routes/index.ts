@@ -1,5 +1,4 @@
 import {Request, Router } from 'express';
-
 import CashFlowRouter from './CashFlow';
 import UsersRouter from './User';
 import apiKeyMW from '@middleware/apiKeyHeaderValidator';
@@ -13,7 +12,7 @@ router.use('/security', apiKeyMW, UsersRouter);
 
 export default router;
 
-//Traera todo lo que le pedimos, cualquier cosa
+//Traera todo lo que le pedimos, any: cualquier cosa
 export interface WithUserRequest extends Request {
     user?: any;
 }

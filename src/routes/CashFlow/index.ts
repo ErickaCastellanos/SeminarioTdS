@@ -5,6 +5,7 @@ import { WithUserRequest } from '@routes/index';
 const router = Router();
 const cashFlowInstance = new CashFlow();
 
+//Tenemos que extender ese
 router.get('/', async (req: WithUserRequest, res)=>{
   try {
     console.log("CASHFLOW", req.user);
@@ -57,6 +58,8 @@ router.post('/new', async (req: WithUserRequest, res)=>{
     const newCashFlow = req.body as unknown as ICashFlow;
     //VALIDATE
 
+    //No lo colocamos directamente dentro del ICashFlow porque tendría que colocarlo
+    //primeramente en un objectId,entonces lo pasamos aquí directamente
     const newCashFlowIndex = await cashFlowInstance.addCashFlow(newCashFlow, userId);
     res.json({newIndex: newCashFlowIndex});
   } catch (error) {

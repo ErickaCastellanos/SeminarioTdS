@@ -14,7 +14,8 @@ export class CashFlowDao extends AbstractDao<ICashFlow> {
   }
 
   public getCashFlowByUser(id: string) {
-    return super.findByFilter({ userId: new ObjectId(id) });
+    //sort:{'type':-1} es para ordenarlo de forma descendente
+    return super.findByFilter({ userId: new ObjectId(id)}, {sort:{'type':-1}});
   }
 
   public async getClashFlowById(identifier: string) {
