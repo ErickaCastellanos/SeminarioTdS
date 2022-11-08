@@ -40,12 +40,20 @@ export class CashFlow {
         return this.dao.getClashFlowById(index);
     }
 
+    //Obtener registros por usuario
+    public getCashFlowByUserPaged(userId: string, page: number, items: number) {
+        return this.dao.getCashFlowByUserPaged(userId, page, items);
+    }
+
     //Comparando si el dao es de tipo dao y lo convertimos porque solo mnogodb está
     //trabajando sino es de mongodb devuelve 0
-    public getCountCashflow() {
-        return (this.dao instanceof CashFlowMongoDbDao) ?
-            (this.dao as CashFlowMongoDbDao).getCountCashFlow() :
-            Promise.resolve(0);
+    public getCountCashflow(userId: string) {
+        return this.dao.getCountCashFlow(userId);
+    }
+
+    //
+    public getTypeSumary(userId: string) {
+        return this.dao.getTypeSumarry(userId);
     }
 
     //Inserta en el arreglo clasflowitems va agregar el nuevo cashflow que

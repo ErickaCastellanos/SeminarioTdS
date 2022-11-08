@@ -1,4 +1,4 @@
-import { Router} from 'express';
+import { Router } from 'express';
 import { ICashFlow, CashFlow } from '@libs/CashFlow';
 import { commonValidator, validateInput } from '@server/utils/validator';
 import { WithUserRequest } from '@routes/index';
@@ -6,20 +6,32 @@ const router = Router();
 const cashFlowInstance = new CashFlow();
 
 //Tenemos que extender ese
-router.get('/', async (req: WithUserRequest, res)=>{
+router.get('/', async (req: WithUserRequest, res) => {
   try {
+    //Si tiene esa informacion la va a extraer
+    const { page, items } = { page: "1", items: "10", ...req.query };
     console.log("CASHFLOW", req.user);
-    res.json(await cashFlowInstance.getAllCashFlowFromUser(req.user?._id));
+    res.json(await cashFlowInstance.getCashFlowByUserPaged(req.user?._id, Number(page), Number(items)));
   } catch (ex) {
     console.error(ex);
-    res.status(503).json({error:ex});
+    res.status(503).json({ error: ex });
   }
 });
 
 //
-router.get('/count', async (_req, res) => {
+router.get('/summary', async (req: WithUserRequest, res) => {
   try {
-    res.json({ "count": await cashFlowInstance.getCountCashflow() });
+    res.json(await cashFlowInstance.getTypeSumary(req.user._id));
+  } catch (ex) {
+    console.error(ex);
+    res.status(503).json({ error: ex });
+  }
+});
+
+//
+router.get('/count', async (req: WithUserRequest, res) => {
+  try {
+    res.json({ "count": await cashFlowInstance.getCountCashflow(req.user._id) });
   } catch (ex) {
     console.error(ex);
     res.status(503).json({ error: ex });
@@ -29,11 +41,11 @@ router.get('/count', async (_req, res) => {
 //Obtener por id
 router.get('/byindex/:index', async (req, res) => {
   try {
-    const { index : id } = req.params;
+    const { index: id } = req.params;
     res.json(await cashFlowInstance.getCashFlowByIndex(id));
   } catch (error) {
     console.log("Error", error);
-    res.status(500).json({'msg': 'Error al obtener Registro'});
+    res.status(500).json({ 'msg': 'Error al obtener Registro' });
   }
 });
 
@@ -52,18 +64,18 @@ router.post('/testvalidator', async (req, res) => {
 });
 
 //
-router.post('/new', async (req: WithUserRequest, res)=>{
+router.post('/new', async (req: WithUserRequest, res) => {
   try {
-    const {_id: userId } = req.user;
+    const { _id: userId } = req.user;
     const newCashFlow = req.body as unknown as ICashFlow;
     //VALIDATE
 
     //No lo colocamos directamente dentro del ICashFlow porque tendría que colocarlo
     //primeramente en un objectId,entonces lo pasamos aquí directamente
     const newCashFlowIndex = await cashFlowInstance.addCashFlow(newCashFlow, userId);
-    res.json({newIndex: newCashFlowIndex});
+    res.json({ newIndex: newCashFlowIndex });
   } catch (error) {
-    res.status(500).json({error: (error as Error).message});
+    res.status(500).json({ error: (error as Error).message });
   }
 });
 
@@ -81,17 +93,17 @@ router.put('/update/:index', async (req, res) => {
 });
 
 //
-router.delete('/delete/:index', (req, res)=>{
+router.delete('/delete/:index', (req, res) => {
   try {
-    const { index : id } = req.params;
+    const { index: id } = req.params;
     if (cashFlowInstance.deleteCashFlow(id)) {
-      res.status(200).json({"msg": "Registro Eliminado"});
+      res.status(200).json({ "msg": "Registro Eliminado" });
     } else {
-      res.status(500).json({'msg': 'Error al eliminar Registro'});
+      res.status(500).json({ 'msg': 'Error al eliminar Registro' });
     }
   } catch (error) {
     console.log("Error", error);
-    res.status(500).json({'msg': 'Error al eliminar Registro'});
+    res.status(500).json({ 'msg': 'Error al eliminar Registro' });
   }
 });
 

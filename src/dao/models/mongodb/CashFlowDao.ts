@@ -15,7 +15,44 @@ export class CashFlowDao extends AbstractDao<ICashFlow> {
 
   public getCashFlowByUser(id: string) {
     //sort:{'type':-1} es para ordenarlo de forma descendente
-    return super.findByFilter({ userId: new ObjectId(id)}, {sort:{'type':-1}});
+    return super.findByFilter({ userId: new ObjectId(id) }, { sort: { 'type': -1 } });
+  }
+
+  //Este metodo es para poder visualizar las páginas que tiene cada registro
+  //Y veremos cuantas paginas se deben mostrar y este es el tercer parámetro
+  public async getCashFlowByUserPaged(userId: string, page: number = 1, itemsPerPage: number = 10) {
+    //Extraer todos los registros que corresponden a la página y al numero que definimos
+    try {
+      //Total de documentos basados en el filtro
+      const total = await super.getCollection().countDocuments({ userId: new ObjectId(userId) });
+      //Cantidad de páginas que pueden haber
+      const totalPages = Math.ceil(total / itemsPerPage);
+      //Devolvemos una promesa
+      const items = await super.findByFilter(
+        { userId: new ObjectId(userId) },
+        {
+          sort: { 'type': -1 },
+          skip: ((page - 1) * itemsPerPage),
+          limit: itemsPerPage
+        });
+      return {
+        total,
+        totalPages,
+        page,
+        itemsPerPage,
+        items
+      }
+    } catch (ex) {
+      console.log("CashFlowDao mongodb:", (ex as Error).message);
+      throw ex;
+    }
+  }
+
+  //
+  public getTypeSumarry(userId: string) {
+    const match = { $match: { userId: new ObjectId(userId) } }; //Filtro
+    const group = { $group: { _id: "$type", item: { $sum: 1 } } }; //Recibe los datos agrupados
+    return this.aggregate([match, group], {});
   }
 
   public async getClashFlowById(identifier: string) {
@@ -51,10 +88,10 @@ export class CashFlowDao extends AbstractDao<ICashFlow> {
     }
   }
 
-  //Extraer los documentos sin la información como tal
-  public async getCountCashFlow() {
+  //Extraer todos los documentos sin la información como tal
+  public async getCountCashFlow(userId: string) {
     try {
-      return await super.getCollection().countDocuments({});
+      return await super.getCollection().countDocuments({ userId: new ObjectId(userId) });
     } catch (ex: unknown) {
       console.log("CashFlowDao mongodb:", (ex as Error).message);
       throw ex;
